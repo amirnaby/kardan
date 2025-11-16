@@ -1,7 +1,7 @@
 package com.niam.kardan.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.niam.usermanagement.entities.User;
+import com.niam.usermanagement.model.entities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

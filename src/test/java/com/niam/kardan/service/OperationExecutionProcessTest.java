@@ -11,7 +11,7 @@ import com.niam.kardan.model.basedata.enums.TASK_STATUS;
 import com.niam.kardan.repository.OperationExecutionRepository;
 import com.niam.kardan.repository.OperatorMachineRepository;
 import com.niam.kardan.repository.PartOperationTaskRepository;
-import com.niam.usermanagement.entities.User;
+import com.niam.usermanagement.model.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
