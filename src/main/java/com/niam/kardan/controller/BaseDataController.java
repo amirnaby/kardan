@@ -1,5 +1,7 @@
 package com.niam.kardan.controller;
 
+import com.niam.common.model.response.ServiceResponse;
+import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.service.GenericBaseDataService;
 import com.niam.kardan.service.GenericBaseDataServiceFactory;
@@ -9,7 +11,6 @@ import org.reflections.Reflections;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,20 +20,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BaseDataController {
     private final GenericBaseDataServiceFactory factory;
+    private final ResponseEntityUtil responseEntityUtil;
 
     /**
      * Example: GET /api/basedata/entities
      * Returns all ٍEntities.
      */
     @GetMapping("/entities")
-    public List<String> getAllBaseDataEntities() {
+    public ResponseEntity<ServiceResponse> getAllBaseDataEntities() {
         Reflections reflections = new Reflections("com.niam.kardan.model.basedata");
         Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
 
-        return entities.stream()
-                .map(Class::getSimpleName)
-                .sorted()
-                .collect(Collectors.toList());
+        return responseEntityUtil.ok(entities.stream().map(Class::getSimpleName).sorted().collect(Collectors.toList()));
     }
 
     /**
@@ -40,30 +39,30 @@ public class BaseDataController {
      * Returns all ExecutionStatus records.
      */
     @GetMapping("/{entity}")
-    public ResponseEntity<List<? extends BaseData>> getAll(@PathVariable String entity) {
+    public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
         Class<? extends BaseData> type = resolveEntity(entity);
         GenericBaseDataService<? extends BaseData> service = factory.create(type);
-        return ResponseEntity.ok(service.getAll());
+        return responseEntityUtil.ok(service.getAll());
     }
 
     /**
      * Example: GET /api/basedata/ExecutionStatus/1
      */
     @GetMapping("/{entity}/{id}")
-    public ResponseEntity<BaseData> getById(@PathVariable String entity, @PathVariable Long id) {
+    public ResponseEntity<ServiceResponse> getById(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
         GenericBaseDataService<? extends BaseData> service = factory.create(type);
-        return ResponseEntity.ok(service.getById(id));
+        return responseEntityUtil.ok(service.getById(id));
     }
 
     /**
      * Example: GET /api/basedata/ExecutionStatus/code/STARTED
      */
     @GetMapping("/{entity}/code/{code}")
-    public ResponseEntity<BaseData> getByCode(@PathVariable String entity, @PathVariable String code) {
+    public ResponseEntity<ServiceResponse> getByCode(@PathVariable String entity, @PathVariable String code) {
         Class<? extends BaseData> type = resolveEntity(entity);
         GenericBaseDataService<? extends BaseData> service = factory.create(type);
-        return ResponseEntity.ok(service.getByCode(code));
+        return responseEntityUtil.ok(service.getByCode(code));
     }
 
     /**
@@ -81,24 +80,24 @@ public class BaseDataController {
      * Example: PUT /api/basedata/ExecutionStatus/1
      */
     @PutMapping("/{entity}/{id}")
-    public ResponseEntity<BaseData> update(
+    public ResponseEntity<ServiceResponse> update(
             @PathVariable String entity,
             @PathVariable Long id,
             @RequestBody Map<String, Object> payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
         GenericBaseDataService<? extends BaseData> service = factory.create(type);
-        return ResponseEntity.ok(service.update(id, payload));
+        return responseEntityUtil.ok(service.update(id, payload));
     }
 
     /**
      * Example: DELETE /api/basedata/ExecutionStatus/1
      */
     @DeleteMapping("/{entity}/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String entity, @PathVariable Long id) {
+    public ResponseEntity<ServiceResponse> delete(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
         GenericBaseDataService<? extends BaseData> service = factory.create(type);
         service.delete(id);
-        return ResponseEntity.noContent().build();
+        return responseEntityUtil.ok(entity + " has been deleted successfully!");
     }
 
     /**

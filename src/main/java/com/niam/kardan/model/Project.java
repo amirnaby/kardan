@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.niam.common.utils.CustomLocalDateTimeDeserializer;
 import com.niam.common.utils.CustomLocalDateTimeSerializer;
 import com.niam.kardan.model.basedata.ProjectStatus;
+import com.niam.usermanagement.model.entities.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

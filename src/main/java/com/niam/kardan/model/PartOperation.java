@@ -2,6 +2,7 @@ package com.niam.kardan.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.niam.kardan.model.basedata.PartOperationStatus;
+import com.niam.usermanagement.model.entities.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

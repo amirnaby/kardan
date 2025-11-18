@@ -4,6 +4,8 @@ import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Machine;
+import com.niam.kardan.model.basedata.MachineStatus;
+import com.niam.kardan.model.basedata.MachineType;
 import com.niam.kardan.repository.MachineRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MachineService {
     private final MachineRepository machineRepository;
+    private final GenericBaseDataServiceFactory baseDataServiceFactory;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -31,6 +34,10 @@ public class MachineService {
     @Transactional("transactionManager")
     @CacheEvict(value = {"machines", "machine"}, allEntries = true)
     public Machine create(Machine machine) {
+        machine.setMachineType(baseDataServiceFactory
+                .create(MachineType.class).getByCode(machine.getMachineType().getCode()));
+        machine.setMachineStatus(baseDataServiceFactory
+                .create(MachineStatus.class).getByCode(machine.getMachineStatus().getCode()));
         return machineRepository.save(machine);
     }
 

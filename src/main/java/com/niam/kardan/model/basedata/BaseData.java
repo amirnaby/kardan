@@ -1,6 +1,6 @@
 package com.niam.kardan.model.basedata;
 
-import com.niam.kardan.model.Auditable;
+import com.niam.usermanagement.model.entities.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
