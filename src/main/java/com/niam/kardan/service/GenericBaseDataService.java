@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -44,7 +43,6 @@ public class GenericBaseDataService<T extends BaseData> {
         return "basedata::" + entityName + "::code";
     }
 
-    @Transactional(readOnly = true, value = "transactionManager")
     public List<T> getAll() {
         Cache c = cacheManager.getCache(cacheAllName());
         if (c != null) {
@@ -58,7 +56,6 @@ public class GenericBaseDataService<T extends BaseData> {
         return list;
     }
 
-    @Transactional(readOnly = true, value = "transactionManager")
     public T getById(Long id) {
         Cache c = cacheManager.getCache(cacheByIdName());
         if (c != null) {
@@ -71,7 +68,6 @@ public class GenericBaseDataService<T extends BaseData> {
         return found;
     }
 
-    @Transactional(readOnly = true, value = "transactionManager")
     public Optional<T> findByCodeOptional(String code) {
         if (!StringUtils.hasText(code)) return Optional.empty();
         Cache c = cacheManager.getCache(cacheByCodeName());
@@ -83,12 +79,11 @@ public class GenericBaseDataService<T extends BaseData> {
         q.setParameter("code", code);
         List<T> list = q.setMaxResults(1).getResultList();
         if (list.isEmpty()) return Optional.empty();
-        T bd = list.get(0);
+        T bd = list.getFirst();
         if (c != null) c.put(code, bd);
         return Optional.of(bd);
     }
 
-    @Transactional(readOnly = true, value = "transactionManager")
     public T getByCode(String code) {
         return findByCodeOptional(code).orElseThrow(() ->
                 new EntityNotFoundException(
@@ -97,7 +92,6 @@ public class GenericBaseDataService<T extends BaseData> {
                         entityName + " with code=" + code + " not found"));
     }
 
-    @Transactional("transactionManager")
     public T create(Map<String, Object> payload) {
         try {
             T instance = type.getDeclaredConstructor().newInstance();
@@ -112,7 +106,6 @@ public class GenericBaseDataService<T extends BaseData> {
         }
     }
 
-    @Transactional("transactionManager")
     public T update(Long id, Map<String, Object> payload) {
         T existing = em.find(type, id);
         if (existing == null) throw notFound(id);
@@ -123,7 +116,6 @@ public class GenericBaseDataService<T extends BaseData> {
         return existing;
     }
 
-    @Transactional("transactionManager")
     public void delete(Long id) {
         T existing = em.find(type, id);
         if (existing == null) throw notFound(id);

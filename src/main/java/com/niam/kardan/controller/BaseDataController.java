@@ -3,7 +3,7 @@ package com.niam.kardan.controller;
 import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.basedata.BaseData;
-import com.niam.kardan.service.GenericBaseDataService;
+import com.niam.kardan.service.BaseDataServiceProxy;
 import com.niam.kardan.service.GenericBaseDataServiceFactory;
 import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class BaseDataController {
     @GetMapping("/{entity}")
     public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.getAll());
     }
 
@@ -51,7 +51,7 @@ public class BaseDataController {
     @GetMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> getById(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.getById(id));
     }
 
@@ -61,7 +61,7 @@ public class BaseDataController {
     @GetMapping("/{entity}/code/{code}")
     public ResponseEntity<ServiceResponse> getByCode(@PathVariable String entity, @PathVariable String code) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.getByCode(code));
     }
 
@@ -72,7 +72,7 @@ public class BaseDataController {
     @PostMapping("/{entity}")
     public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody Map<String, Object> payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return ResponseEntity.ok(service.create(payload));
     }
 
@@ -85,7 +85,7 @@ public class BaseDataController {
             @PathVariable Long id,
             @RequestBody Map<String, Object> payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.update(id, payload));
     }
 
@@ -95,7 +95,7 @@ public class BaseDataController {
     @DeleteMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> delete(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
-        GenericBaseDataService<? extends BaseData> service = factory.create(type);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         service.delete(id);
         return responseEntityUtil.ok(entity + " has been deleted successfully!");
     }

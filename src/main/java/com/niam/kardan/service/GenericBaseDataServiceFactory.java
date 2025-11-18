@@ -2,24 +2,24 @@ package com.niam.kardan.service;
 
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.util.EntityClassResolver;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class GenericBaseDataServiceFactory {
-    private final EntityManager em;
-    private final CacheManager cacheManager;
     private final EntityClassResolver resolver;
+    private final ApplicationContext context;
 
-    public <T extends BaseData> GenericBaseDataService<T> create(Class<T> type) {
-        return new GenericBaseDataService<>(type, em, cacheManager);
+    public <T extends BaseData> BaseDataServiceProxy<T> create(Class<T> type) {
+        BaseDataServiceProxy<T> proxy = context.getBean(BaseDataServiceProxy.class);
+        proxy.setType(type);
+        return proxy;
     }
 
-    public <T extends BaseData> GenericBaseDataService<T> create(String simpleEntityName) {
+    public <T extends BaseData> BaseDataServiceProxy<T> create(String simpleEntityName) {
         Class<? extends BaseData> type = resolver.resolve(simpleEntityName);
-        return (GenericBaseDataService<T>) create(type);
+        return (BaseDataServiceProxy<T>) create(type);
     }
 }
