@@ -50,25 +50,22 @@ public class OperatorMachineService {
     @Transactional("transactionManager")
     @CacheEvict(value = {"operatorMachines", "operatorMachine"}, allEntries = true)
     public OperatorMachine update(Long id, OperatorMachine updated) {
-        OperatorMachine existing = operatorMachineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorMachine")));
+        OperatorMachine existing = operatorMachineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorMachine")));
 
-        BeanUtils.copyProperties(updated, existing, "id", "operator", "machine", "assignedAt", "createdAt", "updatedAt");
-
+        BeanUtils.copyProperties(updated, existing, "id", "operator", "machine", "assignedAt");
         return operatorMachineRepository.save(existing);
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "operatorMachine", key = "#id")
     public OperatorMachine getById(Long id) {
-        return operatorMachineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorMachine")));
+        return operatorMachineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorMachine")));
     }
 
     @Transactional(readOnly = true, value = "transactionManager")

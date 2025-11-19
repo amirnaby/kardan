@@ -1,11 +1,12 @@
 package com.niam.kardan.service;
 
+import com.niam.common.exception.EntityExistsException;
 import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Project;
+import com.niam.kardan.model.basedata.ProjectStatus;
 import com.niam.kardan.repository.ProjectRepository;
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
+    private final GenericBaseDataServiceFactory baseDataServiceFactory;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -31,6 +33,7 @@ public class ProjectService {
     @Transactional("transactionManager")
     @CacheEvict(value = {"projects", "project"}, allEntries = true)
     public Project create(Project project) {
+        project.setStatus(baseDataServiceFactory.create(ProjectStatus.class).getByCode(project.getStatus().getCode()));
         return projectRepository.save(project);
     }
 
@@ -38,7 +41,8 @@ public class ProjectService {
     @CacheEvict(value = {"projects", "project"}, allEntries = true)
     public Project update(Long id, Project updated) {
         Project existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id");
+        existing.setStatus(baseDataServiceFactory.create(ProjectStatus.class).getByCode(updated.getStatus().getCode()));
         return projectRepository.save(existing);
     }
 

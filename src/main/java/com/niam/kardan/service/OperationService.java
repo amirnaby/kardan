@@ -38,19 +38,16 @@ public class OperationService {
     @CacheEvict(value = {"operations", "operation"}, allEntries = true)
     public Operation update(Long id, Operation updated) {
         Operation existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id");
         return operationRepository.save(existing);
     }
 
     @Cacheable(value = "operation", key = "#id")
     public Operation getById(Long id) {
-        return operationRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(),
-                                        "Operation")));
+        return operationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operation")));
     }
 
     @Cacheable(value = "operations")

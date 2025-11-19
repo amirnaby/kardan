@@ -34,13 +34,11 @@ public class OperationExecutionService {
     private final MessageUtil messageUtil;
 
     public OperationExecution getById(Long id) {
-        return operationExecutionRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(),
-                                "OperationExecution")));
+        return operationExecutionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(
+                        ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperationExecution")));
     }
 
     /**
@@ -54,8 +52,7 @@ public class OperationExecutionService {
                         ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
                         ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
                         messageUtil.getMessage(
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(),
-                                "PartOperationTask")));
+                                ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "PartOperationTask")));
 
         // Validate task status = PENDING
         if (!TASK_STATUS.PENDING.name().equalsIgnoreCase(task.getTaskStatus().getCode())) {
@@ -75,8 +72,7 @@ public class OperationExecutionService {
 
         // Check operator authorized for machine (active OperatorMachine)
         boolean operatorCanUse = operatorMachineRepository
-                .existsByOperatorIdAndMachineIdAndUnassignedAtIsNull(
-                        operator.getId(), machine.getId());
+                .existsByOperatorIdAndMachineIdAndUnassignedAtIsNull(operator.getId(), machine.getId());
         if (!operatorCanUse) {
             throw new IllegalStateException(
                     messageUtil.getMessage("operator.notAssignedToMachine",
@@ -107,7 +103,6 @@ public class OperationExecutionService {
     @Transactional("transactionManager")
     public OperationStop stopExecution(Long executionId, Long stopReasonId, String comment) {
         OperationExecution exec = getById(executionId);
-
         StopReason stopReason = stopReasonService.getById(stopReasonId);
 
         // Change execution status to STOPPED
@@ -134,8 +129,7 @@ public class OperationExecutionService {
 
         if (!EXECUTION_STATUS.STOPPED.name().equalsIgnoreCase(execution.getExecutionStatus().getCode())) {
             throw new IllegalStateException(
-                    messageUtil.getMessage("execution.must.be.stopped",
-                            String.valueOf(executionId)));
+                    messageUtil.getMessage("execution.must.be.stopped", String.valueOf(executionId)));
         }
 
         // Close all open OperationStop entries
@@ -148,7 +142,6 @@ public class OperationExecutionService {
         // Change execution status to RUNNING
         execution.setExecutionStatus(BaseData.ofCode(ExecutionStatus.class, EXECUTION_STATUS.RUNNING.name()));
         execution.setStartTime(LocalDateTime.now());
-
         return operationExecutionRepository.save(execution);
     }
 
@@ -162,8 +155,7 @@ public class OperationExecutionService {
         if (!EXECUTION_STATUS.STARTED.name().equalsIgnoreCase(exec.getExecutionStatus().getCode())
                 && !EXECUTION_STATUS.STOPPED.name().equalsIgnoreCase(exec.getExecutionStatus().getCode())) {
             throw new IllegalStateException(
-                    messageUtil.getMessage("execution.notStartOrStopped",
-                            String.valueOf(executionId)));
+                    messageUtil.getMessage("execution.notStartOrStopped", String.valueOf(executionId)));
         }
 
         exec.setEndTime(LocalDateTime.now());

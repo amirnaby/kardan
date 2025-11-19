@@ -1,11 +1,12 @@
 package com.niam.kardan.service;
 
+import com.niam.common.exception.EntityExistsException;
 import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Part;
+import com.niam.kardan.model.basedata.PartStatus;
 import com.niam.kardan.repository.PartRepository;
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PartService {
     private final PartRepository partRepository;
+    private final GenericBaseDataServiceFactory baseDataServiceFactory;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -31,6 +33,7 @@ public class PartService {
     @Transactional("transactionManager")
     @CacheEvict(value = {"parts", "part"}, allEntries = true)
     public Part create(Part part) {
+        part.setStatus(baseDataServiceFactory.create(PartStatus.class).getByCode(part.getStatus().getCode()));
         return partRepository.save(part);
     }
 
@@ -38,7 +41,8 @@ public class PartService {
     @CacheEvict(value = {"parts", "part"}, allEntries = true)
     public Part update(Long id, Part updated) {
         Part existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id");
+        existing.setStatus(baseDataServiceFactory.create(PartStatus.class).getByCode(updated.getStatus().getCode()));
         return partRepository.save(existing);
     }
 

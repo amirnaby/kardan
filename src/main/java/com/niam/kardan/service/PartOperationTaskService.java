@@ -19,7 +19,6 @@ import java.util.List;
 public class PartOperationTaskService {
     private final PartOperationTaskRepository partOperationTaskRepository;
     private final GenericBaseDataServiceFactory baseDataServiceFactory;
-
     private final MessageUtil messageUtil;
 
     @Transactional("transactionManager")
@@ -40,11 +39,10 @@ public class PartOperationTaskService {
 
     @Transactional(readOnly = true, value = "transactionManager")
     public PartOperationTask getById(Long id) {
-        return partOperationTaskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "PartOperationTask")));
+        return partOperationTaskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "PartOperationTask")));
     }
 
     @Transactional(readOnly = true, value = "transactionManager")

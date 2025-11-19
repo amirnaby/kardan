@@ -1,6 +1,7 @@
 package com.niam.kardan.service;
 
 import com.niam.common.exception.EntityNotFoundException;
+import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.OperatorShift;
@@ -43,18 +44,17 @@ public class OperatorShiftService {
     @CacheEvict(value = {"operatorShift", "operatorShifts"}, allEntries = true)
     public OperatorShift update(Long id, OperatorShift updated) {
         OperatorShift existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "operator", "shift", "assignedAt", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id", "operator", "shift", "assignedAt");
         return operatorShiftRepository.save(existing);
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "operatorShift", key = "#id")
     public OperatorShift getById(Long id) {
-        return operatorShiftRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorShift")));
+        return operatorShiftRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "OperatorShift")));
     }
 
     @Transactional(readOnly = true, value = "transactionManager")

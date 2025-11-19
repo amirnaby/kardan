@@ -1,6 +1,8 @@
 package com.niam.kardan.service;
 
 import com.niam.common.exception.EntityNotFoundException;
+import com.niam.common.exception.IllegalArgumentException;
+import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Operator;
@@ -53,11 +55,10 @@ public class OperatorService {
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "operator", key = "#id")
     public Operator getById(Long id) {
-        return operatorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operator")));
+        return operatorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operator")));
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
@@ -70,7 +71,6 @@ public class OperatorService {
     @CacheEvict(value = {"operator", "operators"}, allEntries = true)
     public void delete(Long id) {
         Operator operator = self.getById(id);
-
         boolean hasActiveShift = operatorShiftRepository.existsByOperatorIdAndUnassignedAtIsNull(operator.getId());
         if (hasActiveShift) {
             throw new IllegalStateException(messageUtil.getMessage(
@@ -82,10 +82,9 @@ public class OperatorService {
 
     @Transactional(readOnly = true, value = "transactionManager")
     public Operator findByUserId(Long userId) {
-        return operatorRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operator")));
+        return operatorRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException(
+                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operator")));
     }
 }

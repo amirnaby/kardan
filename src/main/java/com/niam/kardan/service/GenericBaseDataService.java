@@ -63,7 +63,7 @@ public class GenericBaseDataService<T extends BaseData> {
             if (cached != null) return cached;
         }
         T found = em.find(type, id);
-        if (found == null) throw notFound(id);
+        if (found == null) throw notFound(String.valueOf(id));
         if (c != null) c.put(id, found);
         return found;
     }
@@ -85,11 +85,7 @@ public class GenericBaseDataService<T extends BaseData> {
     }
 
     public T getByCode(String code) {
-        return findByCodeOptional(code).orElseThrow(() ->
-                new EntityNotFoundException(
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                        entityName + " with code=" + code + " not found"));
+        return findByCodeOptional(code).orElseThrow(() -> notFound(code));
     }
 
     public T create(Map<String, Object> payload) {
@@ -108,7 +104,7 @@ public class GenericBaseDataService<T extends BaseData> {
 
     public T update(Long id, Map<String, Object> payload) {
         T existing = em.find(type, id);
-        if (existing == null) throw notFound(id);
+        if (existing == null) throw notFound(String.valueOf(id));
         if (payload.containsKey("name")) existing.setName(String.valueOf(payload.get("name")));
         if (payload.containsKey("description")) existing.setDescription(String.valueOf(payload.get("description")));
         em.merge(existing);
@@ -118,7 +114,7 @@ public class GenericBaseDataService<T extends BaseData> {
 
     public void delete(Long id) {
         T existing = em.find(type, id);
-        if (existing == null) throw notFound(id);
+        if (existing == null) throw notFound(String.valueOf(id));
         em.remove(existing);
         evictCaches();
     }
@@ -133,10 +129,10 @@ public class GenericBaseDataService<T extends BaseData> {
         if (c != null) c.clear();
     }
 
-    private EntityNotFoundException notFound(Long id) {
+    private EntityNotFoundException notFound(String id) {
         return new EntityNotFoundException(
                 ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
                 ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                entityName + " with id=" + id + " not found");
+                entityName + " with id/code=" + id + " not found");
     }
 }

@@ -45,19 +45,22 @@ public class MachineService {
     @CacheEvict(value = {"machines", "machine"}, allEntries = true)
     public Machine update(Long id, Machine updated) {
         Machine existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id");
+        existing.setMachineType(baseDataServiceFactory
+                .create(MachineType.class).getByCode(updated.getMachineType().getCode()));
+        existing.setMachineStatus(baseDataServiceFactory
+                .create(MachineStatus.class).getByCode(updated.getMachineStatus().getCode()));
         return machineRepository.save(existing);
     }
 
     @Cacheable(value = "machine", key = "#id")
     public Machine getById(Long id) {
         return machineRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
-                                ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
-                                messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(),
-                                        "Machine")));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
+                        ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
+                        messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(),
+                                "Machine")));
     }
 
     @Cacheable(value = "machines")
@@ -75,13 +78,5 @@ public class MachineService {
             throw new EntityExistsException(
                     messageUtil.getMessage(ResultResponseStatus.ENTITY_HAS_DEPENDENCIES.getDescription(), "Machine"));
         }
-    }
-
-    @Transactional("transactionManager")
-    @CacheEvict(value = {"machines", "machine"}, allEntries = true)
-    public Machine updateStatus(Long id, String newStatusCode) {
-        Machine machine = self.getById(id);
-        machine.getMachineStatus().setCode(newStatusCode);
-        return machineRepository.save(machine);
     }
 }
