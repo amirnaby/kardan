@@ -36,17 +36,14 @@ class OperationStopProcessTest {
     @InjectMocks
     OperationExecutionService operationExecutionService;
     @Mock
-    private GenericBaseDataService<ExecutionStatus> executionStatusService;
-    @Mock
     private GenericBaseDataServiceFactory baseDataServiceFactory;
     @Mock
-    private GenericBaseDataService baseDataService;
+    private BaseDataServiceProxy<ExecutionStatus> executionStatusService;
     @Mock
     private MessageUtil messageUtil;
     private OperationExecution execution;
     private StopReason stopReason;
     private ExecutionStatus stoppedStatus;
-    private ExecutionStatus resumedStatus;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +56,6 @@ class OperationStopProcessTest {
         stopReason.setName("Break");
 
         stoppedStatus = BaseData.ofCode(ExecutionStatus.class, EXECUTION_STATUS.STOPPED.name());
-        resumedStatus = BaseData.ofCode(ExecutionStatus.class, EXECUTION_STATUS.STARTED.name());
 
         when(baseDataServiceFactory.create(ExecutionStatus.class)).thenReturn(executionStatusService);
         when(executionStatusService.getByCode(EXECUTION_STATUS.STOPPED.name())).thenReturn(stoppedStatus);
@@ -81,7 +77,7 @@ class OperationStopProcessTest {
         });
         when(executionRepository.save(any(OperationExecution.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // --- اجرای stop ---
+        // --- Execute stop ---
         OperationStop stop = operationExecutionService.stopExecution(55L, 2L, "emergency");
 
         assertThat(stop).isNotNull();
@@ -102,7 +98,7 @@ class OperationStopProcessTest {
         when(executionRepository.findById(55L)).thenReturn(Optional.of(execution));
         when(executionRepository.save(any(OperationExecution.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // --- اجرای resume ---
+        // --- Execute resume ---
         OperationExecution resumed = operationExecutionService.resumeAfterStop(55L);
 
         assertThat(resumed.getExecutionStatus().getCode()).isEqualTo(EXECUTION_STATUS.RUNNING.name());

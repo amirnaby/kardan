@@ -44,7 +44,7 @@ class MultiOperatorClaimConflictTest {
     @Mock
     private GenericBaseDataServiceFactory baseDataServiceFactory;
     @Mock
-    private GenericBaseDataService baseDataService;
+    private BaseDataServiceProxy baseDataService;
     @Mock
     private MessageUtil messageUtil;
     @InjectMocks
@@ -84,8 +84,8 @@ class MultiOperatorClaimConflictTest {
 
         when(baseDataService.getByCode(TASK_STATUS.IN_PROGRESS.name()))
                 .thenReturn(BaseData.ofCode(TaskStatus.class, TASK_STATUS.IN_PROGRESS.name()));
-        when(baseDataService.getByCode(EXECUTION_STATUS.RUNNING.name()))
-                .thenReturn(BaseData.ofCode(ExecutionStatus.class, EXECUTION_STATUS.RUNNING.name()));
+        when(baseDataService.getByCode(EXECUTION_STATUS.STARTED.name()))
+                .thenReturn(BaseData.ofCode(ExecutionStatus.class, EXECUTION_STATUS.STARTED.name()));
 
         // when findByIdForUpdate called first time, return task (PENDING)
         when(partOperationTaskRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(task));

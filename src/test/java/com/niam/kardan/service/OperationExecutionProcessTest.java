@@ -42,9 +42,9 @@ class OperationExecutionProcessTest {
     @Mock
     private GenericBaseDataServiceFactory baseDataServiceFactory;
     @Mock
-    private GenericBaseDataService<TaskStatus> taskStatusService;
+    private BaseDataServiceProxy<TaskStatus> taskStatusService;
     @Mock
-    private GenericBaseDataService<ExecutionStatus> executionStatusService;
+    private BaseDataServiceProxy<ExecutionStatus> executionStatusService;
     @Mock
     private MessageUtil messageUtil;
     private PartOperationTask task;
@@ -96,10 +96,10 @@ class OperationExecutionProcessTest {
         when(operationExecutionRepository.save(any(OperationExecution.class))).thenAnswer(i -> i.getArguments()[0]);
         when(partOperationTaskRepository.save(any(PartOperationTask.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // --- اجرای claim و start ---
+        // --- Execute claim & start ---
         OperationExecution exec = operationExecutionService.claimAndStartTask(100L, 10L, 200L);
 
-        // --- assertions بعد از start ---
+        // --- assertions after start ---
         assertThat(exec).isNotNull();
         assertThat(exec.getOperator().getId()).isEqualTo(10L);
         assertThat(task.getTaskStatus().getCode()).isEqualTo(TASK_STATUS.IN_PROGRESS.name());
@@ -110,10 +110,10 @@ class OperationExecutionProcessTest {
         when(partOperationTaskRepository.save(any(PartOperationTask.class))).thenAnswer(i -> i.getArguments()[0]);
         when(operationExecutionRepository.save(any(OperationExecution.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // --- اجرای finish ---
+        // --- Execute finish ---
         OperationExecution finished = operationExecutionService.finishExecution(exec.getId());
 
-        // --- assertions بعد از finish ---
+        // --- assertions after finish ---
         assertThat(finished.getExecutionStatus().getCode()).isEqualTo(EXECUTION_STATUS.COMPLETED.name());
         assertThat(finished.getEndTime()).isNotNull();
         verify(partOperationTaskRepository, atLeastOnce()).save(any(PartOperationTask.class));

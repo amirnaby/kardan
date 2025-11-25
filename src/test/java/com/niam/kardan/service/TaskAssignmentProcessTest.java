@@ -48,14 +48,13 @@ class TaskAssignmentProcessTest {
     @InjectMocks
     OperationExecutionService operationExecutionService;
     @Mock
-    private GenericBaseDataService<TaskStatus> taskStatusService;
-    @Mock
-    private GenericBaseDataService<ExecutionStatus> executionStatusService;
-    @Mock
     private GenericBaseDataServiceFactory baseDataServiceFactory;
+    @Mock
+    private BaseDataServiceProxy<TaskStatus> taskStatusService;
+    @Mock
+    private BaseDataServiceProxy<ExecutionStatus> executionStatusService;
     private PartOperationTask task;
     private Operator op1;
-    private Operator op2;
     private Machine machine;
 
     @BeforeEach
@@ -68,8 +67,6 @@ class TaskAssignmentProcessTest {
         task.setTargetMachine(machine);
         op1 = new Operator();
         op1.setId(1L);
-        op2 = new Operator();
-        op2.setId(2L);
 
         when(baseDataServiceFactory.create(TaskStatus.class)).thenReturn(taskStatusService);
         when(baseDataServiceFactory.create(ExecutionStatus.class)).thenReturn(executionStatusService);
