@@ -48,7 +48,7 @@ public class OperatorService {
                         ResultResponseStatus.ENTITY_NOT_FOUND.getResponseCode(),
                         ResultResponseStatus.ENTITY_NOT_FOUND.getReasonCode(),
                         messageUtil.getMessage(ResultResponseStatus.ENTITY_NOT_FOUND.getDescription(), "Operator")));
-        BeanUtils.copyProperties(updatedOperator, existing, "id", "user", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updatedOperator, existing, "id", "user");
         return operatorRepository.save(existing);
     }
 

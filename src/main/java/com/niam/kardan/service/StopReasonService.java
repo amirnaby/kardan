@@ -41,7 +41,7 @@ public class StopReasonService {
     @CacheEvict(value = {"stopReasons", "stopReason"}, allEntries = true)
     public StopReason update(Long id, StopReason updated) {
         StopReason existing = self.getById(id);
-        BeanUtils.copyProperties(updated, existing, "id", "createdAt", "updatedAt");
+        BeanUtils.copyProperties(updated, existing, "id");
         existing.setCategory(baseDataServiceFactory.create(StopReasonCategory.class).getByCode(updated.getCategory().getCode()));
         return stopReasonRepository.save(existing);
     }

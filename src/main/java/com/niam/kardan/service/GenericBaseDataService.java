@@ -1,5 +1,7 @@
 package com.niam.kardan.service;
 
+import com.niam.common.exception.BusinessException;
+import com.niam.common.exception.EntityExistsException;
 import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.kardan.model.basedata.BaseData;
@@ -7,12 +9,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -88,28 +92,33 @@ public class GenericBaseDataService<T extends BaseData> {
         return findByCodeOptional(code).orElseThrow(() -> notFound(code));
     }
 
-    public T create(Map<String, Object> payload) {
+    public T create(BaseData payload) {
         try {
             T instance = type.getDeclaredConstructor().newInstance();
-            if (payload.containsKey("name")) instance.setName(String.valueOf(payload.get("name")));
-            if (payload.containsKey("description")) instance.setDescription(String.valueOf(payload.get("description")));
-            if (payload.containsKey("code")) instance.setCode(String.valueOf(payload.get("code")));
+            BeanUtils.copyProperties(payload, instance, "id");
             em.persist(instance);
+            em.flush();
             evictCaches();
             return instance;
+        } catch (DataIntegrityViolationException | ConstraintViolationException e) {
+            throw new EntityExistsException(entityName + " with this code exists");
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create " + entityName, e);
+            throw new BusinessException("Failed to create " + entityName + " due to " + e.getMessage());
         }
     }
 
-    public T update(Long id, Map<String, Object> payload) {
-        T existing = em.find(type, id);
-        if (existing == null) throw notFound(String.valueOf(id));
-        if (payload.containsKey("name")) existing.setName(String.valueOf(payload.get("name")));
-        if (payload.containsKey("description")) existing.setDescription(String.valueOf(payload.get("description")));
-        em.merge(existing);
-        evictCaches();
-        return existing;
+    public T update(Long id, BaseData payload) {
+        try {
+            T existing = em.find(type, id);
+            if (existing == null) throw notFound(String.valueOf(id));
+            BeanUtils.copyProperties(payload, existing, "id", "code");
+            em.merge(existing);
+            em.flush();
+            evictCaches();
+            return existing;
+        } catch (Exception e) {
+            throw new BusinessException("Failed to update " + entityName + " due to " + e.getMessage());
+        }
     }
 
     public void delete(Long id) {

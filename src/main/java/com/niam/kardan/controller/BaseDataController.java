@@ -3,6 +3,7 @@ package com.niam.kardan.controller;
 import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.basedata.BaseData;
+import com.niam.kardan.model.dto.BaseDataDto;
 import com.niam.kardan.service.BaseDataServiceProxy;
 import com.niam.kardan.service.GenericBaseDataServiceFactory;
 import jakarta.persistence.Entity;
@@ -11,7 +12,6 @@ import org.reflections.Reflections;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,7 +70,7 @@ public class BaseDataController {
      * body: {"code":"STARTED","name":"Started","description":"Task has started"}
      */
     @PostMapping("/{entity}")
-    public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody BaseDataDto payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return ResponseEntity.ok(service.create(payload));
@@ -83,7 +83,7 @@ public class BaseDataController {
     public ResponseEntity<ServiceResponse> update(
             @PathVariable String entity,
             @PathVariable Long id,
-            @RequestBody Map<String, Object> payload) {
+            @RequestBody BaseDataDto payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.update(id, payload));

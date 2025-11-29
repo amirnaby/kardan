@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Scope("prototype")
@@ -26,12 +25,12 @@ public class BaseDataServiceProxy<T extends BaseData> {
     }
 
     @Transactional("transactionManager")
-    public T create(Map<String, Object> p) {
+    public T create(BaseData p) {
         return delegate().create(p);
     }
 
     @Transactional("transactionManager")
-    public T update(Long id, Map<String, Object> p) {
+    public T update(Long id, BaseData p) {
         return delegate().update(id, p);
     }
 
