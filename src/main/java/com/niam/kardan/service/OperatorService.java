@@ -6,8 +6,14 @@ import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Operator;
+import com.niam.kardan.model.dto.OperatorAccount;
 import com.niam.kardan.repository.OperatorRepository;
 import com.niam.kardan.repository.OperatorShiftRepository;
+import com.niam.usermanagement.model.entities.Role;
+import com.niam.usermanagement.model.entities.User;
+import com.niam.usermanagement.model.payload.request.UserDTO;
+import com.niam.usermanagement.model.repository.RoleRepository;
+import com.niam.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +24,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class OperatorService {
+    private final UserService userService;
+    private final RoleRepository roleRepository;
     private final OperatorRepository operatorRepository;
     private final OperatorShiftRepository operatorShiftRepository;
     private final MessageUtil messageUtil;
@@ -29,6 +39,30 @@ public class OperatorService {
     @Lazy
     @Autowired
     private OperatorService self;
+
+    @Transactional("transactionManager")
+    public Operator createOperatorAccount(OperatorAccount operatorAccount) {
+        UserDTO userDTO = operatorAccount.getUser();
+
+        Set<String> roleNames = Set.of("ROLE_OPERATOR");
+        Set<String> roles = roleNames.stream()
+                .map(name -> roleRepository.findByName(name)
+                        .orElseThrow(() -> new EntityNotFoundException("Role not found: " + name)))
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        userDTO.setRoleNames(roles);
+
+        User user = userService.createUser(userDTO);
+
+        Operator operatorFromRequest = operatorAccount.getOperator();
+
+        Operator operator = new Operator();
+        BeanUtils.copyProperties(operatorFromRequest, operator);
+        operator.setUser(user);
+
+        return create(operator);
+    }
 
     @Transactional("transactionManager")
     @CacheEvict(value = {"operator", "operators"}, allEntries = true)

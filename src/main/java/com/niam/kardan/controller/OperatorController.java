@@ -3,10 +3,12 @@ package com.niam.kardan.controller;
 import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.Operator;
+import com.niam.kardan.model.dto.OperatorAccount;
 import com.niam.kardan.service.OperatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -18,8 +20,8 @@ public class OperatorController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ServiceResponse> saveOperator(@RequestBody Operator operator) {
-        return responseEntityUtil.ok(operatorService.create(operator));
+    public ResponseEntity<ServiceResponse> saveOperator(@Validated @RequestBody OperatorAccount operatorAccount) {
+        return responseEntityUtil.ok(operatorService.createOperatorAccount(operatorAccount));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
