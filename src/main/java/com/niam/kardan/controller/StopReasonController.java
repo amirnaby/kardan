@@ -16,32 +16,32 @@ public class StopReasonController {
     private final StopReasonService stopReasonService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
     public ResponseEntity<ServiceResponse> saveStopReason(@RequestBody StopReason stopReason) {
         return responseEntityUtil.ok(stopReasonService.create(stopReason));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updateStopReason(@PathVariable Long id, @RequestBody StopReason stopReason) {
         return responseEntityUtil.ok(stopReasonService.update(id, stopReason));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> deleteStopReason(@PathVariable Long id) {
         stopReasonService.delete(id);
         return responseEntityUtil.ok("StopReason deleted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findStopReason(@PathVariable Long id) {
         return responseEntityUtil.ok(stopReasonService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllStopReasons() {
         return responseEntityUtil.ok(stopReasonService.getAll());

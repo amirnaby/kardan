@@ -16,32 +16,32 @@ public class MachineController {
     private final MachineService machineService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
-    public ResponseEntity<ServiceResponse> saveMachine(@RequestBody Machine machine) {
+    public ResponseEntity<ServiceResponse> createMachine(@RequestBody Machine machine) {
         return responseEntityUtil.ok(machineService.create(machine));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updateMachine(@PathVariable Long id, @RequestBody Machine machine) {
         return responseEntityUtil.ok(machineService.update(id, machine));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> deleteMachine(@PathVariable Long id) {
         machineService.delete(id);
         return responseEntityUtil.ok("Machine deleted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findMachine(@PathVariable Long id) {
         return responseEntityUtil.ok(machineService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllMachines() {
         return responseEntityUtil.ok(machineService.getAll());

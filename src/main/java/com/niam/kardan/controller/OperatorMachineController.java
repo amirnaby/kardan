@@ -16,38 +16,38 @@ public class OperatorMachineController {
     private final OperatorMachineService operatorMachineService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
     public ResponseEntity<ServiceResponse> assignMachine(@RequestBody OperatorMachine operatorMachine) {
         return responseEntityUtil.ok(operatorMachineService.create(operatorMachine));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updateOperatorMachine(@PathVariable Long id, @RequestBody OperatorMachine operatorMachine) {
         return responseEntityUtil.ok(operatorMachineService.update(id, operatorMachine));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> unassignMachine(@PathVariable Long id) {
         operatorMachineService.unassign(id);
         return responseEntityUtil.ok("OperatorMachine unassigned successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findOperatorMachine(@PathVariable Long id) {
         return responseEntityUtil.ok(operatorMachineService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllOperatorMachines() {
         return responseEntityUtil.ok(operatorMachineService.getAll());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/active/{operatorId}")
     public ResponseEntity<ServiceResponse> findActiveMachines(@PathVariable Long operatorId) {
         return responseEntityUtil.ok(operatorMachineService.findActiveMachinesByOperator(operatorId));

@@ -16,32 +16,33 @@ public class PartController {
     private final PartService partService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+
     @PostMapping
-    public ResponseEntity<ServiceResponse> savePart(@RequestBody Part part) {
+    public ResponseEntity<ServiceResponse> createPart(@RequestBody Part part) {
         return responseEntityUtil.ok(partService.create(part));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updatePart(@PathVariable Long id, @RequestBody Part part) {
         return responseEntityUtil.ok(partService.update(id, part));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> deletePart(@PathVariable Long id) {
         partService.delete(id);
         return responseEntityUtil.ok("Part deleted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findPart(@PathVariable Long id) {
         return responseEntityUtil.ok(partService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllParts() {
         return responseEntityUtil.ok(partService.getAll());

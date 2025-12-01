@@ -16,32 +16,32 @@ public class ShiftController {
     private final ShiftService shiftService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
-    public ResponseEntity<ServiceResponse> saveShift(@RequestBody Shift shift) {
+    public ResponseEntity<ServiceResponse> createShift(@RequestBody Shift shift) {
         return responseEntityUtil.ok(shiftService.create(shift));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updateShift(@PathVariable Long id, @RequestBody Shift shift) {
         return responseEntityUtil.ok(shiftService.update(id, shift));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> deleteShift(@PathVariable Long id) {
         shiftService.delete(id);
         return responseEntityUtil.ok("Shift deleted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findShift(@PathVariable Long id) {
         return responseEntityUtil.ok(shiftService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllShifts() {
         return responseEntityUtil.ok(shiftService.getAll());

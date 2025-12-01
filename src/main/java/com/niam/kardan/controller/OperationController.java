@@ -16,32 +16,32 @@ public class OperationController {
     private final OperationService operationService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping
-    public ResponseEntity<ServiceResponse> saveOperation(@RequestBody Operation Operation) {
+    public ResponseEntity<ServiceResponse> createOperation(@RequestBody Operation Operation) {
         return responseEntityUtil.ok(operationService.create(Operation));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceResponse> updateOperation(@PathVariable Long id, @RequestBody Operation Operation) {
         return responseEntityUtil.ok(operationService.update(id, Operation));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceResponse> deleteOperation(@PathVariable Long id) {
         operationService.delete(id);
         return responseEntityUtil.ok("Operation deleted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> findOperation(@PathVariable Long id) {
         return responseEntityUtil.ok(operationService.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllOperations() {
         return responseEntityUtil.ok(operationService.getAll());

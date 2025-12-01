@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -23,52 +24,10 @@ public class BaseDataController {
     private final ResponseEntityUtil responseEntityUtil;
 
     /**
-     * Example: GET /api/basedata/entities
-     * Returns all ٍEntities.
-     */
-    @GetMapping("/entities")
-    public ResponseEntity<ServiceResponse> getAllBaseDataEntities() {
-        Reflections reflections = new Reflections("com.niam.kardan.model.basedata");
-        Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
-
-        return responseEntityUtil.ok(entities.stream().map(Class::getSimpleName).sorted().collect(Collectors.toList()));
-    }
-
-    /**
-     * Example: GET /api/basedata/ExecutionStatus
-     * Returns all ExecutionStatus records.
-     */
-    @GetMapping("/{entity}")
-    public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
-        Class<? extends BaseData> type = resolveEntity(entity);
-        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
-        return responseEntityUtil.ok(service.getAll());
-    }
-
-    /**
-     * Example: GET /api/basedata/ExecutionStatus/1
-     */
-    @GetMapping("/{entity}/{id}")
-    public ResponseEntity<ServiceResponse> getById(@PathVariable String entity, @PathVariable Long id) {
-        Class<? extends BaseData> type = resolveEntity(entity);
-        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
-        return responseEntityUtil.ok(service.getById(id));
-    }
-
-    /**
-     * Example: GET /api/basedata/ExecutionStatus/code/STARTED
-     */
-    @GetMapping("/{entity}/code/{code}")
-    public ResponseEntity<ServiceResponse> getByCode(@PathVariable String entity, @PathVariable String code) {
-        Class<? extends BaseData> type = resolveEntity(entity);
-        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
-        return responseEntityUtil.ok(service.getByCode(code));
-    }
-
-    /**
      * Example: POST /api/basedata/ExecutionStatus
      * body: {"code":"STARTED","name":"Started","description":"Task has started"}
      */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping("/{entity}")
     public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody BaseDataDto payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
@@ -79,6 +38,7 @@ public class BaseDataController {
     /**
      * Example: PUT /api/basedata/ExecutionStatus/1
      */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> update(
             @PathVariable String entity,
@@ -92,12 +52,60 @@ public class BaseDataController {
     /**
      * Example: DELETE /api/basedata/ExecutionStatus/1
      */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @DeleteMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> delete(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         service.delete(id);
         return responseEntityUtil.ok(entity + " has been deleted successfully!");
+    }
+
+    /**
+     * Example: GET /api/basedata/entities
+     * Returns all ٍEntities.
+     */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @GetMapping("/entities")
+    public ResponseEntity<ServiceResponse> getAllBaseDataEntities() {
+        Reflections reflections = new Reflections("com.niam.kardan.model.basedata");
+        Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
+
+        return responseEntityUtil.ok(entities.stream().map(Class::getSimpleName).sorted().collect(Collectors.toList()));
+    }
+
+    /**
+     * Example: GET /api/basedata/ExecutionStatus
+     * Returns all ExecutionStatus records.
+     */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @GetMapping("/{entity}")
+    public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
+        Class<? extends BaseData> type = resolveEntity(entity);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
+        return responseEntityUtil.ok(service.getAll());
+    }
+
+    /**
+     * Example: GET /api/basedata/ExecutionStatus/1
+     */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @GetMapping("/{entity}/{id}")
+    public ResponseEntity<ServiceResponse> getById(@PathVariable String entity, @PathVariable Long id) {
+        Class<? extends BaseData> type = resolveEntity(entity);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
+        return responseEntityUtil.ok(service.getById(id));
+    }
+
+    /**
+     * Example: GET /api/basedata/ExecutionStatus/code/STARTED
+     */
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @GetMapping("/{entity}/code/{code}")
+    public ResponseEntity<ServiceResponse> getByCode(@PathVariable String entity, @PathVariable String code) {
+        Class<? extends BaseData> type = resolveEntity(entity);
+        BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
+        return responseEntityUtil.ok(service.getByCode(code));
     }
 
     /**
