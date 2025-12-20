@@ -4,8 +4,8 @@ import com.niam.common.exception.IllegalStateException;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Machine;
 import com.niam.kardan.model.OperationExecution;
-import com.niam.kardan.model.Operator;
 import com.niam.kardan.model.PartOperationTask;
+import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.basedata.ExecutionStatus;
 import com.niam.kardan.model.basedata.TaskStatus;
@@ -40,7 +40,7 @@ class MultiOperatorClaimConflictTest {
     @Mock
     private MachineService machineService;
     @Mock
-    private OperatorService operatorService;
+    private UserAccountService operatorService;
     @Mock
     private GenericBaseDataServiceFactory baseDataServiceFactory;
     @Mock
@@ -51,7 +51,7 @@ class MultiOperatorClaimConflictTest {
     private OperationExecutionService operationExecutionService;
 
     private PartOperationTask task;
-    private Operator op1, op2;
+    private UserAccount op1, op2;
     private Machine machine;
 
     @BeforeEach
@@ -65,13 +65,13 @@ class MultiOperatorClaimConflictTest {
         machine.setCode("M-700");
         task.setTargetMachine(machine);
 
-        op1 = new Operator();
+        op1 = new UserAccount();
         op1.setId(1L);
         User u1 = new User();
         u1.setUsername("op1");
         op1.setUser(u1);
 
-        op2 = new Operator();
+        op2 = new UserAccount();
         op2.setId(2L);
         User u2 = new User();
         u2.setUsername("op2");

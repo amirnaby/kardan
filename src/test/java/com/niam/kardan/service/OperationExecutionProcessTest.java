@@ -34,7 +34,7 @@ class OperationExecutionProcessTest {
     @Mock
     MachineService machineService;
     @Mock
-    OperatorService operatorService;
+    UserAccountService operatorService;
     @Mock
     OperatorMachineRepository operatorMachineRepository;
     @InjectMocks
@@ -48,7 +48,7 @@ class OperationExecutionProcessTest {
     @Mock
     private MessageUtil messageUtil;
     private PartOperationTask task;
-    private Operator operator;
+    private UserAccount operator;
     private Machine machine;
 
     @BeforeEach
@@ -66,7 +66,7 @@ class OperationExecutionProcessTest {
 
         task.setPartOperation(new PartOperation());
 
-        operator = new Operator();
+        operator = new UserAccount();
         operator.setId(10L);
         User user = new User();
         user.setUsername("testuser");

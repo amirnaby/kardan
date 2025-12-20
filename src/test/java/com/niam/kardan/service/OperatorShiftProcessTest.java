@@ -1,6 +1,6 @@
 package com.niam.kardan.service;
 
-import com.niam.kardan.model.Operator;
+import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.model.OperatorShift;
 import com.niam.kardan.model.Shift;
 import com.niam.kardan.repository.OperatorShiftRepository;
@@ -23,13 +23,13 @@ class OperatorShiftProcessTest {
     @InjectMocks
     OperatorShiftService operatorShiftService;
 
-    private Operator operator;
+    private UserAccount operator;
     private Shift shift;
 
     @BeforeEach
     void setUp() {
         operatorShiftService.self = operatorShiftService;
-        operator = new Operator();
+        operator = new UserAccount();
         operator.setId(11L);
         shift = new Shift();
         shift.setId(21L);
