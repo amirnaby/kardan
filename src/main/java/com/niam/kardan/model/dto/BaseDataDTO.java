@@ -12,6 +12,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseDataDto extends BaseData {
+public class BaseDataDTO extends BaseData {
     private Long id;
 }

@@ -40,7 +40,7 @@ public class OperationExecution extends Auditable {
     private Machine machine;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operator_id", referencedColumnName = "id")
-    private Operator operator;
+    private UserAccount operator;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", referencedColumnName = "id")
     private ExecutionStatus executionStatus;

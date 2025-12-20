@@ -30,7 +30,7 @@ public class OperatorMachine extends Auditable {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operator_id", referencedColumnName = "id", nullable = false)
-    private Operator operator;
+    private UserAccount operator;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "machine_id", referencedColumnName = "id", nullable = false)
     private Machine machine;

@@ -28,7 +28,7 @@ public class OperationExecutionService {
     private final OperationStopRepository operationStopRepository;
     private final OperatorMachineRepository operatorMachineRepository;
     private final MachineService machineService;
-    private final OperatorService operatorService;
+    private final UserAccountService operatorService;
     private final StopReasonService stopReasonService;
     private final GenericBaseDataServiceFactory baseDataServiceFactory;
     private final MessageUtil messageUtil;
@@ -60,7 +60,7 @@ public class OperationExecutionService {
                     messageUtil.getMessage("task.not.pending", String.valueOf(taskId)));
         }
 
-        Operator operator = operatorService.getById(operatorId);
+        UserAccount operator = operatorService.getById(operatorId);
 
         Machine machine = machineService.getById(machineId);
 

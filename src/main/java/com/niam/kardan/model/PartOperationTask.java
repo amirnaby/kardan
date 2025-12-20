@@ -40,7 +40,7 @@ public class PartOperationTask extends Auditable {
     private PartOperationTask parentTask;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "claimed_by_operator_id")
-    private Operator claimedBy;
+    private UserAccount claimedBy;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
     private TaskStatus taskStatus;

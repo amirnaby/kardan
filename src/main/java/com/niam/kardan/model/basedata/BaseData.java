@@ -1,5 +1,7 @@
 package com.niam.kardan.model.basedata;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.niam.kardan.util.BaseDataSerializer;
 import com.niam.usermanagement.model.entities.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -16,6 +18,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Getter
 @MappedSuperclass
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@JsonSerialize(using = BaseDataSerializer.class)
 public abstract class BaseData extends Auditable {
     @Column(nullable = false)
     private String name;

@@ -4,16 +4,20 @@ import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.Project;
 import com.niam.kardan.service.ProjectService;
+import com.niam.kardan.util.PaginationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
+    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
@@ -43,7 +47,7 @@ public class ProjectController {
 
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @GetMapping
-    public ResponseEntity<ServiceResponse> findAllProjects() {
-        return responseEntityUtil.ok(projectService.getAll());
+    public ResponseEntity<ServiceResponse> findAllProjects(@RequestParam Map<String, Object> requestParams) {
+        return responseEntityUtil.ok(projectService.getAll(paginationUtils.pageHandler(requestParams)));
     }
 }

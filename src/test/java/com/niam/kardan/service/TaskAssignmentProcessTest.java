@@ -4,8 +4,8 @@ import com.niam.common.exception.IllegalStateException;
 import com.niam.common.utils.MessageUtil;
 import com.niam.kardan.model.Machine;
 import com.niam.kardan.model.OperationExecution;
-import com.niam.kardan.model.Operator;
 import com.niam.kardan.model.PartOperationTask;
+import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.basedata.ExecutionStatus;
 import com.niam.kardan.model.basedata.TaskStatus;
@@ -42,7 +42,7 @@ class TaskAssignmentProcessTest {
     @Mock
     MachineService machineService;
     @Mock
-    OperatorService operatorService;
+    UserAccountService operatorService;
     @Mock
     MessageUtil messageUtil;
     @InjectMocks
@@ -54,7 +54,7 @@ class TaskAssignmentProcessTest {
     @Mock
     private BaseDataServiceProxy<ExecutionStatus> executionStatusService;
     private PartOperationTask task;
-    private Operator op1;
+    private UserAccount op1;
     private Machine machine;
 
     @BeforeEach
@@ -65,7 +65,7 @@ class TaskAssignmentProcessTest {
         machine = new Machine();
         machine.setId(700L);
         task.setTargetMachine(machine);
-        op1 = new Operator();
+        op1 = new UserAccount();
         op1.setId(1L);
 
         when(baseDataServiceFactory.create(TaskStatus.class)).thenReturn(taskStatusService);

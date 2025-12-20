@@ -3,7 +3,7 @@ package com.niam.kardan.controller;
 import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.basedata.BaseData;
-import com.niam.kardan.model.dto.BaseDataDto;
+import com.niam.kardan.model.dto.BaseDataDTO;
 import com.niam.kardan.service.BaseDataServiceProxy;
 import com.niam.kardan.service.GenericBaseDataServiceFactory;
 import jakarta.persistence.Entity;
@@ -29,7 +29,7 @@ public class BaseDataController {
      */
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping("/{entity}")
-    public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody BaseDataDto payload) {
+    public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody BaseDataDTO payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return ResponseEntity.ok(service.create(payload));
@@ -43,7 +43,7 @@ public class BaseDataController {
     public ResponseEntity<ServiceResponse> update(
             @PathVariable String entity,
             @PathVariable Long id,
-            @RequestBody BaseDataDto payload) {
+            @RequestBody BaseDataDTO payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
         return responseEntityUtil.ok(service.update(id, payload));
