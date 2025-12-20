@@ -1,8 +1,8 @@
 package com.niam.kardan.service;
 
-import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.model.OperatorShift;
 import com.niam.kardan.model.Shift;
+import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.repository.OperatorShiftRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
