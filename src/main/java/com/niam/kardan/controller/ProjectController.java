@@ -4,7 +4,7 @@ import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.Project;
 import com.niam.kardan.service.ProjectService;
-import com.niam.kardan.util.PaginationUtils;
+import com.niam.common.utils.PaginationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

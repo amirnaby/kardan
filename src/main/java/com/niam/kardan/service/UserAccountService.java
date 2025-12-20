@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -46,6 +47,9 @@ public class UserAccountService {
         } catch (DataIntegrityViolationException e) {
             user = userService.getUserByUsername(accountDTO.getUserDTO().getUsername());
         }
+        Set<String> roles = accountDTO.getProfile().getTypes().stream().map(
+                t -> "ROLE_" + t.name()).collect(Collectors.toSet());
+        userService.updateRoles(user.getUsername(), roles);
         userAccountRepository.save(UserAccount.builder()
                 .user(user)
                 .types(accountDTO.getProfile().getTypes().stream().map(Enum::name).collect(Collectors.toSet()))
@@ -106,5 +110,9 @@ public class UserAccountService {
     public UserAccount getByUsername(String username) {
         User user = userService.getUserByUsername(username);
         return getByUserId(user.getId());
+    }
+
+    public boolean existsByUsername(String username) {
+        return userAccountRepository.existsByUser_username(username);
     }
 }

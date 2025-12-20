@@ -1,5 +1,5 @@
 package com.niam.kardan.model;
 
 public enum UserType {
-    OPERATOR, QA, MANAGER, REPORTER ,DEVELOPER
+    ADMIN, USER, MANAGER, OPERATOR, QA, REPORTER
 }

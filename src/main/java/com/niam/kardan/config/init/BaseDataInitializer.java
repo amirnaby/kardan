@@ -1,6 +1,14 @@
-package com.niam.kardan.init;
+package com.niam.kardan.config.init;
 
+import com.niam.kardan.model.UserType;
 import com.niam.kardan.model.basedata.BaseData;
+import com.niam.kardan.model.dto.AccountDTO;
+import com.niam.kardan.service.UserAccountService;
+import com.niam.usermanagement.model.entities.Role;
+import com.niam.usermanagement.model.payload.request.UserDTO;
+import com.niam.usermanagement.model.repository.RoleRepository;
+import com.niam.usermanagement.service.UserService;
+import com.niam.usermanagement.utils.UserDTOMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +30,17 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BaseDataInitializer {
     private final EntityManager em;
+    private final UserAccountService userAccountService;
+    private final UserDTOMapper userDTOMapper;
+    private final RoleRepository roleRepository;
+    private final UserService userService;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional("transactionManager")
     public void init() {
+        // ---------------------------------------------------------
+        // 1) Seed BaseDataInitializer
+        // ---------------------------------------------------------
         log.info("BaseDataInitializer start");
         Reflections reflections = new Reflections("com.niam.kardan.model.basedata.enums");
         Set<Class<? extends Enum>> enumClasses = reflections.getSubTypesOf(Enum.class);
@@ -68,5 +83,33 @@ public class BaseDataInitializer {
         }
 
         log.info("BaseDataInitializer finished");
+
+        // ---------------------------------------------------------
+        // 2) Seed User Types as Roles
+        // ---------------------------------------------------------
+        for (UserType type : UserType.values()) {
+            String roleName = "ROLE_" + type.name();
+            if (!roleRepository.existsByName(roleName)) {
+                roleRepository.save(Role.builder()
+                        .name(roleName)
+                        .description(roleName)
+                        .build());
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 3) Seed User Account
+        // ---------------------------------------------------------
+        if (!userAccountService.existsByUsername("AmirNaby")) {
+            UserDTO amirNaby = userDTOMapper.userToUserDTO(userService.getUserByUsername("AmirNaby"));
+            AccountDTO accountDTO = AccountDTO.builder()
+                    .userDTO(amirNaby)
+                    .profile(com.niam.kardan.model.dto.Profile.builder()
+                            .personnelCode("1")
+                            .types(Set.of(UserType.values()))
+                            .build())
+                    .build();
+            userAccountService.create(accountDTO);
+        }
     }
 }
