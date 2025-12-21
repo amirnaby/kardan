@@ -1,11 +1,14 @@
 package com.niam.kardan.config.init;
 
-import com.niam.kardan.model.UserType;
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.dto.AccountDTO;
+import com.niam.kardan.model.enums.PRIVILEGE;
+import com.niam.kardan.model.enums.UserType;
 import com.niam.kardan.service.UserAccountService;
+import com.niam.usermanagement.model.entities.Permission;
 import com.niam.usermanagement.model.entities.Role;
 import com.niam.usermanagement.model.payload.request.UserDTO;
+import com.niam.usermanagement.model.repository.PermissionRepository;
 import com.niam.usermanagement.model.repository.RoleRepository;
 import com.niam.usermanagement.service.UserService;
 import com.niam.usermanagement.utils.UserDTOMapper;
@@ -32,8 +35,9 @@ public class BaseDataInitializer {
     private final EntityManager em;
     private final UserAccountService userAccountService;
     private final UserDTOMapper userDTOMapper;
-    private final RoleRepository roleRepository;
     private final UserService userService;
+    private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional("transactionManager")
@@ -85,7 +89,7 @@ public class BaseDataInitializer {
         log.info("BaseDataInitializer finished");
 
         // ---------------------------------------------------------
-        // 2) Seed User Types as Roles
+        // 2) Seed User Types as Roles & Permissions
         // ---------------------------------------------------------
         for (UserType type : UserType.values()) {
             String roleName = "ROLE_" + type.name();
@@ -95,6 +99,17 @@ public class BaseDataInitializer {
                         .description(roleName)
                         .build());
             }
+        }
+
+        for (PRIVILEGE privilege : PRIVILEGE.values()) {
+            permissionRepository.findByCode(privilege.getCode())
+                    .orElseGet(() -> permissionRepository.save(
+                            Permission.builder()
+                                    .code(privilege.getCode())
+                                    .name(privilege.getCode())
+                                    .description(privilege.getCode())
+                                    .build()
+                    ));
         }
 
         // ---------------------------------------------------------

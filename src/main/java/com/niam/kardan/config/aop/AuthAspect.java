@@ -1,9 +1,9 @@
-package com.niam.kardan.config;
+package com.niam.kardan.config.aop;
 
 import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.UserAccount;
-import com.niam.kardan.model.UserType;
+import com.niam.kardan.model.enums.UserType;
 import com.niam.kardan.model.dto.Profile;
 import com.niam.kardan.model.dto.LoginResponse;
 import com.niam.kardan.service.UserAccountService;

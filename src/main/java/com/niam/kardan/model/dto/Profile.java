@@ -1,6 +1,6 @@
 package com.niam.kardan.model.dto;
 
-import com.niam.kardan.model.UserType;
+import com.niam.kardan.model.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

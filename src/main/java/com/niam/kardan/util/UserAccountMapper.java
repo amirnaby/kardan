@@ -1,7 +1,7 @@
 package com.niam.kardan.util;
 
 import com.niam.kardan.model.UserAccount;
-import com.niam.kardan.model.UserType;
+import com.niam.kardan.model.enums.UserType;
 import com.niam.kardan.model.dto.AccountDTO;
 import com.niam.kardan.model.dto.Profile;
 import com.niam.usermanagement.utils.UserDTOMapper;
