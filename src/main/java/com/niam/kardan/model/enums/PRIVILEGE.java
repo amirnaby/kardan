@@ -11,7 +11,7 @@ public final class PRIVILEGE {
     public static final String OPERATION_EXECUTION = "OPERATION_EXECUTION";
 
     public static String[] values() {
-        return Arrays.stream(com.niam.usermanagement.model.enums.PRIVILEGE.class.getDeclaredFields())
+        return Arrays.stream(PRIVILEGE.class.getDeclaredFields())
                 .filter(field ->
                         Modifier.isStatic(field.getModifiers()) &&
                                 Modifier.isFinal(field.getModifiers()) &&

@@ -2,11 +2,11 @@ package com.niam.kardan.config.init;
 
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.dto.AccountDTO;
+import com.niam.kardan.model.enums.PRIVILEGE;
 import com.niam.kardan.model.enums.UserType;
 import com.niam.kardan.service.UserAccountService;
 import com.niam.usermanagement.model.entities.Permission;
 import com.niam.usermanagement.model.entities.Role;
-import com.niam.usermanagement.model.enums.PRIVILEGE;
 import com.niam.usermanagement.model.payload.request.UserDTO;
 import com.niam.usermanagement.service.PermissionService;
 import com.niam.usermanagement.service.RoleService;
