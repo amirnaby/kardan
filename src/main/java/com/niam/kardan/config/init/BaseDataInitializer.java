@@ -2,14 +2,14 @@ package com.niam.kardan.config.init;
 
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.dto.AccountDTO;
-import com.niam.kardan.model.enums.PRIVILEGE;
 import com.niam.kardan.model.enums.UserType;
 import com.niam.kardan.service.UserAccountService;
 import com.niam.usermanagement.model.entities.Permission;
 import com.niam.usermanagement.model.entities.Role;
+import com.niam.usermanagement.model.enums.PRIVILEGE;
 import com.niam.usermanagement.model.payload.request.UserDTO;
-import com.niam.usermanagement.model.repository.PermissionRepository;
-import com.niam.usermanagement.model.repository.RoleRepository;
+import com.niam.usermanagement.service.PermissionService;
+import com.niam.usermanagement.service.RoleService;
 import com.niam.usermanagement.service.UserService;
 import com.niam.usermanagement.utils.UserDTOMapper;
 import jakarta.persistence.EntityManager;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @Profile("init")
@@ -36,8 +37,8 @@ public class BaseDataInitializer {
     private final UserAccountService userAccountService;
     private final UserDTOMapper userDTOMapper;
     private final UserService userService;
-    private final RoleRepository roleRepository;
-    private final PermissionRepository permissionRepository;
+    private final RoleService roleService;
+    private final PermissionService permissionService;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional("transactionManager")
@@ -93,24 +94,30 @@ public class BaseDataInitializer {
         // ---------------------------------------------------------
         for (UserType type : UserType.values()) {
             String roleName = "ROLE_" + type.name();
-            if (!roleRepository.existsByName(roleName)) {
-                roleRepository.save(Role.builder()
+            if (!roleService.existsByName(roleName)) {
+                roleService.createRole(Role.builder()
                         .name(roleName)
                         .description(roleName)
                         .build());
             }
         }
 
-        for (PRIVILEGE privilege : PRIVILEGE.values()) {
-            permissionRepository.findByCode(privilege.getCode())
-                    .orElseGet(() -> permissionRepository.save(
-                            Permission.builder()
-                                    .code(privilege.getCode())
-                                    .name(privilege.getCode())
-                                    .description(privilege.getCode())
-                                    .build()
-                    ));
+        for (String privilege : PRIVILEGE.values()) {
+            if (!permissionService.existsByCode(privilege)) {
+                permissionService.create(
+                        Permission.builder()
+                                .code(privilege)
+                                .name(privilege)
+                                .description(privilege)
+                                .build()
+                );
+            }
         }
+
+        Set<Permission> permissions = new HashSet<>(permissionService.getAll());
+        Role role = roleService.getByName("ROLE_ADMIN");
+        role.setPermissions(permissions);
+        roleService.updateRole(role);
 
         // ---------------------------------------------------------
         // 3) Seed User Account

@@ -1,15 +1,29 @@
 package com.niam.kardan.model.enums;
 
-import lombok.Getter;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
-@Getter
-public enum PRIVILEGE {
-    USER_MANAGE("USER_MANAGE"),
-    USER_READ("USER_READ");
+public final class PRIVILEGE {
+    private PRIVILEGE() {
+    }
 
-    private final String code;
+    public static final String APP_MANAGE = "APP_MANAGE";
+    public static final String OPERATION_EXECUTION = "OPERATION_EXECUTION";
 
-    PRIVILEGE(String code) {
-        this.code = code;
+    public static String[] values() {
+        return Arrays.stream(com.niam.usermanagement.model.enums.PRIVILEGE.class.getDeclaredFields())
+                .filter(field ->
+                        Modifier.isStatic(field.getModifiers()) &&
+                                Modifier.isFinal(field.getModifiers()) &&
+                                field.getType().equals(String.class)
+                )
+                .map(field -> {
+                    try {
+                        return (String) field.get(null);
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalStateException("Cannot access privilege field: " + field.getName(), e);
+                    }
+                })
+                .toArray(String[]::new);
     }
 }

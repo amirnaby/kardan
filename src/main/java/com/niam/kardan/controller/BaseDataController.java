@@ -4,13 +4,14 @@ import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.basedata.BaseData;
 import com.niam.kardan.model.dto.BaseDataDTO;
+import com.niam.kardan.model.enums.PRIVILEGE;
 import com.niam.kardan.service.BaseDataServiceProxy;
 import com.niam.kardan.service.GenericBaseDataServiceFactory;
+import com.niam.usermanagement.annotation.HasPermission;
 import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -27,7 +28,7 @@ public class BaseDataController {
      * Example: POST /api/basedata/ExecutionStatus
      * body: {"code":"STARTED","name":"Started","description":"Task has started"}
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @PostMapping("/{entity}")
     public ResponseEntity<BaseData> create(@PathVariable String entity, @RequestBody BaseDataDTO payload) {
         Class<? extends BaseData> type = resolveEntity(entity);
@@ -38,7 +39,7 @@ public class BaseDataController {
     /**
      * Example: PUT /api/basedata/ExecutionStatus/1
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @PutMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> update(
             @PathVariable String entity,
@@ -52,7 +53,7 @@ public class BaseDataController {
     /**
      * Example: DELETE /api/basedata/ExecutionStatus/1
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @DeleteMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> delete(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
@@ -65,7 +66,7 @@ public class BaseDataController {
      * Example: GET /api/basedata/entities
      * Returns all ٍEntities.
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @GetMapping("/entities")
     public ResponseEntity<ServiceResponse> getAllBaseDataEntities() {
         Reflections reflections = new Reflections("com.niam.kardan.model.basedata");
@@ -78,7 +79,7 @@ public class BaseDataController {
      * Example: GET /api/basedata/ExecutionStatus
      * Returns all ExecutionStatus records.
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @GetMapping("/{entity}")
     public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
         Class<? extends BaseData> type = resolveEntity(entity);
@@ -89,7 +90,7 @@ public class BaseDataController {
     /**
      * Example: GET /api/basedata/ExecutionStatus/1
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @GetMapping("/{entity}/{id}")
     public ResponseEntity<ServiceResponse> getById(@PathVariable String entity, @PathVariable Long id) {
         Class<? extends BaseData> type = resolveEntity(entity);
@@ -100,7 +101,7 @@ public class BaseDataController {
     /**
      * Example: GET /api/basedata/ExecutionStatus/code/STARTED
      */
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.APP_MANAGE)
     @GetMapping("/{entity}/code/{code}")
     public ResponseEntity<ServiceResponse> getByCode(@PathVariable String entity, @PathVariable String code) {
         Class<? extends BaseData> type = resolveEntity(entity);
