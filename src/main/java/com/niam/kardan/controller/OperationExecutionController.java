@@ -4,10 +4,11 @@ import com.niam.common.model.response.ServiceResponse;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.OperationExecution;
 import com.niam.kardan.model.OperationStop;
+import com.niam.kardan.model.enums.PRIVILEGE;
 import com.niam.kardan.service.OperationExecutionService;
+import com.niam.usermanagement.annotation.HasPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class OperationExecutionController {
     private final OperationExecutionService operationExecutionService;
     private final ResponseEntityUtil responseEntityUtil;
 
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @PostMapping("/tasks/{taskId}/claim")
     public ResponseEntity<ServiceResponse> claimAndStart(@PathVariable Long taskId, @RequestParam Long operatorId,
                                                          @RequestParam Long machineId) {
@@ -25,7 +26,7 @@ public class OperationExecutionController {
         return responseEntityUtil.ok(exec);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @PostMapping("/{executionId}/stop")
     public ResponseEntity<ServiceResponse> stopExecution(@PathVariable Long executionId, @RequestParam Long stopReasonId,
                                                          @RequestParam(required = false) String comment) {
@@ -33,14 +34,14 @@ public class OperationExecutionController {
         return responseEntityUtil.ok(stop);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @PostMapping("/{executionId}/finish")
     public ResponseEntity<ServiceResponse> finishExecution(@PathVariable Long executionId) {
         OperationExecution exec = operationExecutionService.finishExecution(executionId);
         return responseEntityUtil.ok(exec);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
+    @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse> getExecution(@PathVariable Long id) {
         return responseEntityUtil.ok(operationExecutionService.getById(id));
