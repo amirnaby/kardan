@@ -8,11 +8,12 @@ import com.niam.kardan.model.basedata.TaskStatus;
 import com.niam.kardan.model.basedata.enums.TASK_STATUS;
 import com.niam.kardan.repository.PartOperationTaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +47,8 @@ public class PartOperationTaskService {
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
-    public List<PartOperationTask> getAll() {
-        return partOperationTaskRepository.findAll();
+    public Page<PartOperationTask> getAll(PageRequest pageRequest) {
+        return partOperationTaskRepository.findAll(pageRequest);
     }
 
     @Transactional("transactionManager")

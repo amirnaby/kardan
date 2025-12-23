@@ -1,6 +1,7 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.Machine;
 import com.niam.kardan.model.enums.PRIVILEGE;
@@ -10,11 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/machines")
 public class MachineController {
     private final MachineService machineService;
+    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.MACHINE_MANAGE)
@@ -44,7 +48,7 @@ public class MachineController {
 
     @HasPermission(PRIVILEGE.MACHINE_VIEW)
     @GetMapping
-    public ResponseEntity<ServiceResponse> findAllMachines() {
-        return responseEntityUtil.ok(machineService.getAll());
+    public ResponseEntity<ServiceResponse> findAllMachines(@RequestParam Map<String, Object> requestParams) {
+        return responseEntityUtil.ok(machineService.getAll(paginationUtils.pageHandler(requestParams)));
     }
 }

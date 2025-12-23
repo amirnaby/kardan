@@ -15,10 +15,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +57,8 @@ public class ShiftService {
     }
 
     @Cacheable(value = "shifts")
-    public List<Shift> getAll() {
-        return shiftRepository.findAll();
+    public Page<Shift> getAll(PageRequest pageRequest) {
+        return shiftRepository.findAll(pageRequest);
     }
 
     @Transactional("transactionManager")
