@@ -1,7 +1,6 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
-import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.StopReason;
 import com.niam.kardan.model.enums.PRIVILEGE;
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequestMapping("api/v1/stop-reasons")
 public class StopReasonController {
     private final StopReasonService stopReasonService;
-    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.OPERATION_MANAGE)
@@ -49,6 +47,6 @@ public class StopReasonController {
     @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllStopReasons(@RequestParam Map<String, Object> requestParams) {
-        return responseEntityUtil.ok(stopReasonService.getAll(paginationUtils.pageHandler(requestParams)));
+        return responseEntityUtil.ok(stopReasonService.getAll(requestParams));
     }
 }

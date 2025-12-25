@@ -4,9 +4,11 @@ import com.niam.common.exception.EntityExistsException;
 import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.kardan.model.StopReason;
 import com.niam.kardan.model.basedata.StopReasonCategory;
 import com.niam.kardan.repository.StopReasonRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +18,20 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class StopReasonService {
     private final StopReasonRepository stopReasonRepository;
     private final GenericBaseDataServiceFactory baseDataServiceFactory;
+    private final PaginationUtils paginationUtils;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -55,8 +63,15 @@ public class StopReasonService {
     }
 
     @Cacheable(value = "stopReasons")
-    public Page<StopReason> getAll(PageRequest pageRequest) {
-        return stopReasonRepository.findAll(pageRequest);
+    public Page<StopReason> getAll(Map<String, Object> requestParams) {
+        PageRequest pageRequest = paginationUtils.pageHandler(requestParams);
+        Specification<StopReason> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (requestParams.get("name") != null) predicates.add(criteriaBuilder.equal(root.get("name"), requestParams.remove("name")));
+            if (requestParams.get("category") != null) predicates.add(criteriaBuilder.equal(root.get("category").get("code"), requestParams.remove("category")));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return stopReasonRepository.findAll(specification, pageRequest);
     }
 
     @Transactional("transactionManager")
