@@ -1,7 +1,6 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
-import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.dto.AccountDTO;
 import com.niam.kardan.service.UserAccountService;
@@ -21,7 +20,6 @@ import java.util.Map;
 public class UserAccountController {
     private final UserAccountService userAccountService;
     private final UserAccountMapper userAccountMapper;
-    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.USER_MANAGE)
@@ -54,6 +52,6 @@ public class UserAccountController {
     @HasPermission(PRIVILEGE.USER_MANAGE)
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllUserAccounts(@RequestParam Map<String, Object> requestParams) {
-        return responseEntityUtil.ok(userAccountService.getAll(paginationUtils.pageHandler(requestParams)));
+        return responseEntityUtil.ok(userAccountService.getAll(requestParams));
     }
 }

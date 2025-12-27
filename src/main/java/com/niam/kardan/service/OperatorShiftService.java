@@ -4,8 +4,10 @@ import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.kardan.model.OperatorShift;
 import com.niam.kardan.repository.OperatorShiftRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +16,20 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class OperatorShiftService {
     private final OperatorShiftRepository operatorShiftRepository;
+    private final PaginationUtils paginationUtils;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -61,8 +67,17 @@ public class OperatorShiftService {
 
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "operatorShifts")
-    public Page<OperatorShift> getAll(PageRequest pageRequest) {
-        return operatorShiftRepository.findAll(pageRequest);
+    public Page<OperatorShift> getAll(Map<String, Object> requestParams) {
+        PageRequest pageRequest = paginationUtils.pageHandler(requestParams);
+        Specification<OperatorShift> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (requestParams.get("operatorId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("operatorId").get("id"), requestParams.remove("operatorId")));
+            if (requestParams.get("shiftId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("shiftId").get("id"), requestParams.remove("shiftId")));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return operatorShiftRepository.findAll(specification, pageRequest);
     }
 
     @Transactional("transactionManager")

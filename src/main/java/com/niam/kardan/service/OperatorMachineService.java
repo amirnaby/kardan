@@ -5,8 +5,10 @@ import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.OperationFailedException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.kardan.model.OperatorMachine;
 import com.niam.kardan.repository.OperatorMachineRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +17,20 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class OperatorMachineService {
     private final OperatorMachineRepository operatorMachineRepository;
+    private final PaginationUtils paginationUtils;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -72,8 +78,14 @@ public class OperatorMachineService {
 
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "operatorMachines")
-    public Page<OperatorMachine> getAll(PageRequest pageRequest) {
-        return operatorMachineRepository.findAll(pageRequest);
+    public Page<OperatorMachine> getAll(Map<String, Object> requestParams) {
+        PageRequest pageRequest = paginationUtils.pageHandler(requestParams);
+        Specification<OperatorMachine> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (requestParams.get("operatorId") != null) predicates.add(criteriaBuilder.equal(root.get("operatorId").get("id"), requestParams.remove("operatorId")));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return operatorMachineRepository.findAll(specification, pageRequest);
     }
 
     @Transactional("transactionManager")

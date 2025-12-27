@@ -3,23 +3,30 @@ package com.niam.kardan.service;
 import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.kardan.model.PartOperationTask;
 import com.niam.kardan.model.basedata.TaskStatus;
 import com.niam.kardan.model.basedata.enums.TASK_STATUS;
 import com.niam.kardan.repository.PartOperationTaskRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class PartOperationTaskService {
     private final PartOperationTaskRepository partOperationTaskRepository;
     private final GenericBaseDataServiceFactory baseDataServiceFactory;
+    private final PaginationUtils paginationUtils;
     private final MessageUtil messageUtil;
 
     @Transactional("transactionManager")
@@ -47,8 +54,21 @@ public class PartOperationTaskService {
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
-    public Page<PartOperationTask> getAll(PageRequest pageRequest) {
-        return partOperationTaskRepository.findAll(pageRequest);
+    public Page<PartOperationTask> getAll(Map<String, Object> requestParams) {
+        PageRequest pageRequest = paginationUtils.pageHandler(requestParams);
+        Specification<PartOperationTask> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (requestParams.get("partOperationId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("partOperationId").get("id"), requestParams.remove("partOperationId")));
+            if (requestParams.get("targetMachineId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("targetMachineId").get("id"), requestParams.remove("targetMachineId")));
+            if (requestParams.get("statusId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("statusId").get("id"), requestParams.remove("statusId")));
+            if (requestParams.get("claimedByOperatorId") != null)
+                predicates.add(criteriaBuilder.equal(root.get("claimedByOperatorId").get("id"), requestParams.remove("claimedByOperatorId")));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return partOperationTaskRepository.findAll(specification, pageRequest);
     }
 
     @Transactional("transactionManager")

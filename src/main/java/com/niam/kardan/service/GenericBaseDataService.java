@@ -7,6 +7,10 @@ import com.niam.common.exception.ResultResponseStatus;
 import com.niam.kardan.model.basedata.BaseData;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -16,7 +20,9 @@ import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -47,16 +53,29 @@ public class GenericBaseDataService<T extends BaseData> {
         return "basedata::" + entityName + "::code";
     }
 
-    public List<T> getAll() {
+    public List<T> getAll(Map<String, Object> requestParams) {
+        String cacheKey = requestParams == null || requestParams.isEmpty() ? "all" : null;
         Cache c = cacheManager.getCache(cacheAllName());
-        if (c != null) {
+        if (cacheKey != null && c != null) {
             @SuppressWarnings("unchecked")
-            List<T> cached = c.get("all", List.class);
+            List<T> cached = c.get(cacheKey, List.class);
             if (cached != null) return cached;
         }
-        TypedQuery<T> q = em.createQuery("SELECT e FROM " + entityName + " e", type);
-        List<T> list = q.getResultList();
-        if (c != null) c.put("all", list);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(type);
+        Root<T> root = cq.from(type);
+        List<Predicate> preds = new ArrayList<>();
+        if (requestParams != null) {
+            if (requestParams.containsKey("name")) {
+                preds.add(cb.equal(root.get("name"), requestParams.get("name")));
+            }
+            if (requestParams.containsKey("code")) {
+                preds.add(cb.equal(root.get("code"), requestParams.get("code")));
+            }
+        }
+        if (!preds.isEmpty()) cq.where(preds.toArray(Predicate[]::new));
+        List<T> list = em.createQuery(cq).getResultList();
+        if (cacheKey != null && c != null) c.put(cacheKey, list);
         return list;
     }
 

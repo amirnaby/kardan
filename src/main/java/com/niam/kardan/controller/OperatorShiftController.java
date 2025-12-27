@@ -1,7 +1,6 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
-import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.OperatorShift;
 import com.niam.kardan.model.enums.PRIVILEGE;
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequestMapping("api/v1/operator-shifts")
 public class OperatorShiftController {
     private final OperatorShiftService operatorShiftService;
-    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.SHIFT_MANAGE)
@@ -49,7 +47,7 @@ public class OperatorShiftController {
     @HasPermission(PRIVILEGE.SHIFT_MANAGE)
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllOperatorShifts(@RequestParam Map<String, Object> requestParams) {
-        return responseEntityUtil.ok(operatorShiftService.getAll(paginationUtils.pageHandler(requestParams)));
+        return responseEntityUtil.ok(operatorShiftService.getAll(requestParams));
     }
 
     @HasPermission(PRIVILEGE.SHIFT_MANAGE)

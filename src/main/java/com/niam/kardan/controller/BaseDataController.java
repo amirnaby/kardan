@@ -14,6 +14,7 @@ import org.reflections.Reflections;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,10 @@ public class BaseDataController {
      */
     @HasPermission(PRIVILEGE.APP_MANAGE)
     @GetMapping("/{entity}")
-    public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity) {
+    public ResponseEntity<ServiceResponse> getAll(@PathVariable String entity, @RequestParam Map<String, Object> requestParams) {
         Class<? extends BaseData> type = resolveEntity(entity);
         BaseDataServiceProxy<? extends BaseData> service = factory.create(type);
-        return responseEntityUtil.ok(service.getAll());
+        return responseEntityUtil.ok(service.getAll(requestParams));
     }
 
     /**

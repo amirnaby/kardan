@@ -1,7 +1,6 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
-import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.Project;
 import com.niam.kardan.model.enums.PRIVILEGE;
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequestMapping("api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
-    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.PROJECT_MANAGE)
@@ -49,6 +47,6 @@ public class ProjectController {
     @HasPermission(PRIVILEGE.PROJECT_VIEW)
     @GetMapping
     public ResponseEntity<ServiceResponse> findAllProjects(@RequestParam Map<String, Object> requestParams) {
-        return responseEntityUtil.ok(projectService.getAll(paginationUtils.pageHandler(requestParams)));
+        return responseEntityUtil.ok(projectService.getAll(requestParams));
     }
 }

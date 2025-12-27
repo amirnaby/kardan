@@ -1,7 +1,6 @@
 package com.niam.kardan.controller;
 
 import com.niam.common.model.response.ServiceResponse;
-import com.niam.common.utils.PaginationUtils;
 import com.niam.common.utils.ResponseEntityUtil;
 import com.niam.kardan.model.PartOperationTask;
 import com.niam.kardan.model.enums.PRIVILEGE;
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequestMapping("api/v1/part-operation-tasks")
 public class PartOperationTaskController {
     private final PartOperationTaskService partOperationTaskService;
-    private final PaginationUtils paginationUtils;
     private final ResponseEntityUtil responseEntityUtil;
 
     @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
@@ -49,7 +47,7 @@ public class PartOperationTaskController {
     @HasPermission(PRIVILEGE.OPERATION_EXECUTION)
     @GetMapping
     public ResponseEntity<ServiceResponse> getAll(@RequestParam Map<String, Object> requestParams) {
-        return responseEntityUtil.ok(partOperationTaskService.getAll(paginationUtils.pageHandler(requestParams)));
+        return responseEntityUtil.ok(partOperationTaskService.getAll(requestParams));
     }
 
     @HasPermission(PRIVILEGE.OPERATION_EXECUTION)

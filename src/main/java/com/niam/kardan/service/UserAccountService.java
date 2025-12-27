@@ -4,6 +4,7 @@ import com.niam.common.exception.EntityNotFoundException;
 import com.niam.common.exception.IllegalStateException;
 import com.niam.common.exception.ResultResponseStatus;
 import com.niam.common.utils.MessageUtil;
+import com.niam.common.utils.PaginationUtils;
 import com.niam.kardan.model.UserAccount;
 import com.niam.kardan.model.dto.AccountDTO;
 import com.niam.kardan.repository.OperatorShiftRepository;
@@ -11,6 +12,7 @@ import com.niam.kardan.repository.UserAccountRepository;
 import com.niam.kardan.util.UserAccountMapper;
 import com.niam.usermanagement.model.entities.User;
 import com.niam.usermanagement.service.UserService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,7 @@ public class UserAccountService {
     private final UserAccountRepository userAccountRepository;
     private final UserAccountMapper userAccountMapper;
     private final OperatorShiftRepository operatorShiftRepository;
+    private final PaginationUtils paginationUtils;
     private final MessageUtil messageUtil;
 
     @Lazy
@@ -82,8 +88,17 @@ public class UserAccountService {
 
     @Transactional(readOnly = true, value = "transactionManager")
     @Cacheable(value = "userAccounts")
-    public List<AccountDTO> getAll(PageRequest pageRequest) {
-        return userAccountRepository.findAll(pageRequest).stream()
+    public List<AccountDTO> getAll(Map<String, Object> requestParams) {
+        PageRequest pageRequest = paginationUtils.pageHandler(requestParams);
+        Specification<UserAccount> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (requestParams.get("personnelCode") != null)
+                predicates.add(criteriaBuilder.equal(root.get("personnelCode"), requestParams.remove("personnelCode")));
+            if (requestParams.get("username") != null)
+                predicates.add(criteriaBuilder.equal(root.get("userId").get("username"), requestParams.remove("username")));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return userAccountRepository.findAll(specification, pageRequest).stream()
                 .map(userAccountMapper::UserAccountToAccountDTO)
                 .toList();
     }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Scope("prototype")
@@ -40,8 +41,8 @@ public class BaseDataServiceProxy<T extends BaseData> {
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
-    public List<T> getAll() {
-        return delegate().getAll();
+    public List<T> getAll(Map<String, Object> requestParams) {
+        return delegate().getAll(requestParams);
     }
 
     @Transactional(readOnly = true, value = "transactionManager")
